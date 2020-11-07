@@ -6,6 +6,12 @@ function makeToast() {
   // console.log("Make toast");
 }
 
+function randomLetter(){
+  const alphabet = "abcdefghijklmnopqrstuvwxyz"
+  letra = alphabet[Math.floor(Math.random() * alphabet.length)]
+  console.log("Letra ", letra); 
+}
+
 function makeToastMessage(message) {
   $.toast({
     text: message,
@@ -25,9 +31,12 @@ function connectToSocketIo() {
 }
 
 function emitEventToSocketIo() {
-  let text = $('#messageToServer').val();
+  // let text = $('#messageToServer').val();
+  let nombre = $('#nombreInput').val();
+  let color = $('#colorInput').val();
+  let fruto = $('#frutoInput').val();
   // Envía un mensaje
-  window.socket.emit('messageToServer', { text: text });
+  window.socket.emit('messageToServer', { nombre: nombre, color: color, fruto: fruto });
 }
 
 $(function () {

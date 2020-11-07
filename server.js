@@ -55,17 +55,23 @@ app.use('/', express.static(__dirname + '/public'));
 app.use('/', webRoutes);
 
 io.on('connection', (socket) => {
+  let c = Math.random().toString(36).substring(7);
   // Recibe la conexión del cliente
-  console.log('Client connected...');
-  let i = 0;
-  // Emite un mensaje
-  setInterval(() => {
-      socket.emit('toast', { message: `Message: ${i}`});
-      i++;
-  }, 3000);
+  console.log('Client connected...', c);
+  let i = 10;
+  
   // Recibe un mensaje
   socket.on('messageToServer', (data) => {
-      console.log('messageReceivedFromClient: ', data.text);
+    console.log(`messageReceivedFromClient ${c}: nombre ${data.nombre}, color ${data.color}, fruto ${data.fruto}`);
+    // Emite un mensaje
+    setInterval(() => {
+        if(i > 0){
+          socket.emit('toast', { message: `Quedan: ${i} segundos`});   
+        } else {
+          socket.emit('toast', { message: 'Se acabó el tiempo'});
+        }
+        i--;
+    }, 3000);
   });
 });
 
