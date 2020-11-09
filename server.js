@@ -54,6 +54,8 @@ app.use('/', express.static(__dirname + '/public'));
 // Routes
 app.use('/', webRoutes);
 
+var answers = [];
+
 io.on('connection', (socket) => {
   let c = Math.random().toString(36).substring(7);
   // Recibe la conexión del cliente
@@ -62,18 +64,120 @@ io.on('connection', (socket) => {
   
   // Recibe un mensaje
   socket.on('messageToServer', (data) => {
-    console.log(`messageReceivedFromClient ${c}: nombre ${data.nombre}, color ${data.color}, fruto ${data.fruto}`);
+    console.log(`messageReceivedFromClient ${c}: nombre ${data.nombre}, color ${data.color}, fruto ${data.fruto}, letra ${data.letra}`);
     // Emite un mensaje
-    setInterval(() => {
+
+    data1 = {
+      id : c,
+      nombre : data.nombre,
+      color : data.color,
+      fruto: data.fruto,
+      letra : data.letra
+    }
+
+    answers.push(data1);
+    var letra = data1.letra;
+    console.log(answers);
+
+    var storeTimeInterval = setInterval(() => {
         if(i > 0){
           socket.emit('toast', { message: `Quedan: ${i} segundos`});   
         } else {
           socket.emit('toast', { message: 'Se acabó el tiempo'});
+          clearInterval(storeTimeInterval);
         }
         i--;
-    }, 3000);
+    }, 1000);
+
+    winner(answers,letra);
+
   });
+
+  
 });
+
+function winner(answers, letra){
+  var scores = [];
+  var names = [];
+  var colors = [];
+  var fruits = [];
+
+  for(var i in answers){
+    var item = answers[i];
+    scores.push(0);
+    names.push(item.nombre);
+    colors.push(item.color);
+    fruits.push(item.fruto);
+  }
+
+  for(var i in names){
+    if(names[i].startsWith("A")){ //aqui deberia ir "letra" pero no me pone undefined
+      if(isRepeated(names[i],names) == false){
+        scores[i] = scores[i] + 100; 
+      }else{
+        scores[i] = scores[i] + 50;
+      }
+    }else{
+      console.log("La palabra no empieza con la letra. Tienes 0 puntos");
+    }
+  }
+
+  for(var i in colors){
+    if(colors[i].startsWith("A")){ 
+      if(isRepeated(colors[i],colors) == false){
+        scores[i] = scores[i] + 100; 
+      }else{
+        scores[i] = scores[i] + 50;
+      }
+    }else{
+      console.log("La palabra no empieza con la letra. Tienes 0 puntos");
+    }
+  }
+
+  for(var i in fruits){
+    if(colors[i].startsWith("A")){ 
+      if(isRepeated(fruits[i],fruits) == false){
+        scores[i] = scores[i] + 100; 
+      }else{
+        scores[i] = scores[i] + 50;
+      }
+    }else{
+      console.log("La palabra no empieza con la letra. Tienes 0 puntos");
+    }
+  }
+
+  var arr = obtainMaxScore(scores);
+  console.log(`El ganador es ${answers[arr[0]].id} con ${arr[1]} puntos`)
+}
+
+function isRepeated(color, colors){
+  let sortedColors = colors.slice().sort();
+  var flag = true;
+  for (let i = 0; i < sortedColors.length; i++) {
+    if (color === sortedColors[i]) {
+      flag = true;
+    }else{
+      flag =  false;
+    }
+  }
+
+  return flag;
+}
+
+function obtainMaxScore(scores){
+  console.log("El scores es", scores);
+  var arr = [];
+  var maxScore = 0;
+  var id;
+  for (i=0; i<=scores.length;i++){
+    if (scores[i]>=maxScore) {
+      maxScore=scores[i];
+      id = i;
+      arr.push(id, maxScore);
+    }
+  }
+  return arr;
+}
 
 // App init
 server.listen(appConfig.expressPort, () => {
