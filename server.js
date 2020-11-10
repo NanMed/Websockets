@@ -77,7 +77,6 @@ io.on('connection', (socket) => {
 
     answers.push(data1);
     var letra = data1.letra;
-    console.log(answers);
 
     var storeTimeInterval = setInterval(() => {
         if(i > 0){
@@ -101,6 +100,7 @@ function winner(answers, letra){
   var names = [];
   var colors = [];
   var fruits = [];
+  // console.log("Letra partida", answers[0].letra + "letra " + letra)
 
   for(var i in answers){
     var item = answers[i];
@@ -111,38 +111,38 @@ function winner(answers, letra){
   }
 
   for(var i in names){
-    if(names[i].startsWith("A")){ //aqui deberia ir "letra" pero no me pone undefined
+    if(names[i].startsWith(letra.toString())){
       if(isRepeated(names[i],names) == false){
         scores[i] = scores[i] + 100; 
       }else{
         scores[i] = scores[i] + 50;
       }
     }else{
-      console.log("La palabra no empieza con la letra. Tienes 0 puntos");
+      console.log(`El nombre no empieza con la letra ${letra}. Tienes 0 puntos`);
     }
   }
 
   for(var i in colors){
-    if(colors[i].startsWith("A")){ 
+    if(colors[i].startsWith(letra.toString())){ 
       if(isRepeated(colors[i],colors) == false){
         scores[i] = scores[i] + 100; 
       }else{
         scores[i] = scores[i] + 50;
       }
     }else{
-      console.log("La palabra no empieza con la letra. Tienes 0 puntos");
+      console.log(`El color no empieza con la letra ${letra}. Tienes 0 puntos`);
     }
   }
 
   for(var i in fruits){
-    if(colors[i].startsWith("A")){ 
+    if(fruits[i].startsWith(letra.toString())){ 
       if(isRepeated(fruits[i],fruits) == false){
         scores[i] = scores[i] + 100; 
       }else{
         scores[i] = scores[i] + 50;
       }
     }else{
-      console.log("La palabra no empieza con la letra. Tienes 0 puntos");
+      console.log(`El fruto no empieza con la letra ${letra}. Tienes 0 puntos`);
     }
   }
 
