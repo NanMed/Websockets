@@ -25,6 +25,14 @@ const hbs = exphbs.create({
   extname: extNameHbs,
   helpers: multihelpers
 });
+
+var ganador = 0;
+var puntos = 0;
+var letraGlobal;
+var bastaIsclicked = false;
+var scores = [];
+var gameIsOn = false;
+
 app.engine(extNameHbs, hbs.engine);
 app.set('view engine', extNameHbs);
 
@@ -60,13 +68,29 @@ io.on('connection', (socket) => {
   let c = Math.random().toString(36).substring(7);
   // Recibe la conexión del cliente
   console.log('Client connected...', c);
+  if(gameIsOn){
+    console.log("Hay un juego en curso")
+  } else {
+    console.log("Ya te puedes unir a la partida")
+  }
   let i = 10;
+
+  // Recibe la letra
+  socket.on('emitRandomLetter', (data) => {
+    gameIsOn = true;
+    scores = [];
+    bastaIsclicked = false;
+    console.log(`messageReceivedFromClient letra ${data}`);
+    letraGlobal = data
+    // Emite un mensaje
+    socket.emit('toast', { message: `Letra ${data}`});
+    socket.broadcast.emit('toast', { message: `Letra ${data}`});
+  });
   
   // Recibe un mensaje
   socket.on('messageToServer', (data) => {
     console.log(`messageReceivedFromClient ${c}: nombre ${data.nombre}, color ${data.color}, fruto ${data.fruto}, letra ${data.letra}`);
     // Emite un mensaje
-
     data1 = {
       id : c,
       nombre : data.nombre,
@@ -76,27 +100,32 @@ io.on('connection', (socket) => {
     }
 
     answers.push(data1);
-    var letra = data1.letra;
+    // var letra = data1.letra;
 
-    var storeTimeInterval = setInterval(() => {
+    if(!bastaIsclicked){
+      bastaIsclicked = true;
+      var storeTimeInterval = setInterval(() => {
         if(i > 0){
+          socket.broadcast.emit('toast', { message: `Quedan: ${i} segundos`});
           socket.emit('toast', { message: `Quedan: ${i} segundos`});   
         } else {
+          socket.broadcast.emit('toast', { message: 'Se acabó el tiempo'});
           socket.emit('toast', { message: 'Se acabó el tiempo'});
           clearInterval(storeTimeInterval);
+          // socket.broadcast.emit('toast', { message: `El ganador es ${ganador} con ${puntos} puntos`});
+          // socket.emit('toast', { message: `El ganador es ${ganador} con ${puntos} puntos`});
         }
         i--;
-    }, 1000);
-
-    winner(answers,letra);
-
+      }, 1000);
+    }
+    winner(answers,letraGlobal);
   });
 
   
 });
 
 function winner(answers, letra){
-  var scores = [];
+  scores = [];
   var names = [];
   var colors = [];
   var fruits = [];
@@ -147,7 +176,10 @@ function winner(answers, letra){
   }
 
   var arr = obtainMaxScore(scores);
-  console.log(`El ganador es ${answers[arr[0]].id} con ${arr[1]} puntos`)
+  ganador = answers[arr[0]].id
+  puntos = arr[1]
+  console.log(`El ganador es ${ganador} con ${puntos} puntos`) 
+  gameIsOn = false;
 }
 
 function isRepeated(color, colors){
@@ -173,7 +205,8 @@ function obtainMaxScore(scores){
     if (scores[i]>=maxScore) {
       maxScore=scores[i];
       id = i;
-      arr.push(id, maxScore);
+      arr[0] = id;
+      arr[1] = maxScore
     }
   }
   return arr;
