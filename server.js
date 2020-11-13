@@ -117,19 +117,17 @@ io.on('connection', (socket) => {
           socket.broadcast.emit('toast', { message: 'Se acabó el tiempo'});
           socket.emit('toast', { message: 'Se acabó el tiempo'});
           gameIsOn = false
+          socket.emit('desabilitar', {status: false});
           clearInterval(storeTimeInterval);
-          // socket.broadcast.emit('toast', { message: `El ganador es ${ganador} con ${puntos} puntos`});
-          // socket.emit('toast', { message: `El ganador es ${ganador} con ${puntos} puntos`});
+          winner(answers,letraGlobal);
+          socket.broadcast.emit('toast', { message: `El ganador es ${ganador} con ${puntos} puntos`});
+          socket.emit('toast', { message: `El ganador es ${ganador} con ${puntos} puntos`});
         }
         i--;
-
       }, 1000);
     }
-    winner(answers,letraGlobal);
     
   });
-
-  
 });
 
 function winner(answers, letra){
