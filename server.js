@@ -65,6 +65,7 @@ app.use('/', webRoutes);
 var answers = [];
 
 io.on('connection', (socket) => {
+  // console.log("El socket", socket)
   let c = Math.random().toString(36).substring(7);
   // Recibe la conexión del cliente
   console.log('Client connected...', c);
@@ -105,7 +106,6 @@ io.on('connection', (socket) => {
     }
 
     answers.push(data1);
-    // var letra = data1.letra;
 
     if(!bastaIsclicked){
       bastaIsclicked = true;

@@ -30,12 +30,13 @@ function connectToSocketIo() {
         labelUsuario.innerHTML = data.usuario;
         
   });
-    checkGame();
+  checkGame();
 }
 
 function checkGame(){
-  let server = window.location.protocol + "//" + window.location.host;
-  window.socket = io.connect(server);
+  //Con estas comentadas ya no crea un nuevo clienter al darle iniciar partida
+  // let server = window.location.protocol + "//" + window.location.host;
+  // window.socket = io.connect(server);
   window.socket.on('desabilitar', function (data) {
     // Muestra el mensaje
     console.log(data.status)
@@ -56,8 +57,9 @@ function emitRandomLetter(){
   console.log("Letra ", this.letra); 
   window.socket.emit('emitRandomLetter', letra);
 
-  let server = window.location.protocol + "//" + window.location.host;
-  window.socket = io.connect(server);
+  //Con estas comentadas ya no crea un nuevo clienter al darle iniciar partida
+  // let server = window.location.protocol + "//" + window.location.host;
+  // window.socket = io.connect(server);
   window.socket.on('letra', function (data) {
     // Muestra el mensaje
     const letra = document.getElementById("letra");
@@ -68,7 +70,6 @@ function emitRandomLetter(){
 }
 
 function emitEventToSocketIo() {
-  // let text = $('#messageToServer').val();
   let nombre = $('#nombreInput').val();
   let color = $('#colorInput').val();
   let fruto = $('#frutoInput').val();
