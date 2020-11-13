@@ -24,6 +24,29 @@ function connectToSocketIo() {
     // Muestra el mensaje
     makeToastMessage(data.message);
   });
+  window.socket.on('usuario', function (data) {
+    // Muestra el mensaje
+    const labelUsuario = document.getElementById("usuario");
+        labelUsuario.innerHTML = data.usuario;
+        
+  });
+    checkGame();
+}
+
+function checkGame(){
+  let server = window.location.protocol + "//" + window.location.host;
+  window.socket = io.connect(server);
+  window.socket.on('desabilitar', function (data) {
+    // Muestra el mensaje
+    console.log(data.status)
+    if(data.status == true){
+      document.getElementById("Onoff").disabled = true;
+      const usuarioNuevo = document.getElementById("usuarioNuevo");
+      usuarioNuevo.innerHTML = "Juego en progreso, espera un momento";
+      document.getElementById("btB").disabled = true;
+    }
+        
+  });
 }
 
 function emitRandomLetter(){
@@ -32,6 +55,16 @@ function emitRandomLetter(){
   document.getElementById("letra").innerHTML = this.letra;
   console.log("Letra ", this.letra); 
   window.socket.emit('emitRandomLetter', letra);
+
+  let server = window.location.protocol + "//" + window.location.host;
+  window.socket = io.connect(server);
+  window.socket.on('letra', function (data) {
+    // Muestra el mensaje
+    const letra = document.getElementById("letra");
+        letra.innerHTML = data.letra;
+        
+  });
+
 }
 
 function emitEventToSocketIo() {
@@ -49,4 +82,5 @@ function emitEventToSocketIo() {
 
 $(function () {
   connectToSocketIo();
+  checkGame();
 });

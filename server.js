@@ -68,10 +68,14 @@ io.on('connection', (socket) => {
   let c = Math.random().toString(36).substring(7);
   // Recibe la conexión del cliente
   console.log('Client connected...', c);
-  if(gameIsOn){
+  socket.emit('usuario', {usuario:c});
+  
+  if(gameIsOn == true){
     console.log("Hay un juego en curso")
+    socket.emit('desabilitar', {status: true});
   } else {
     console.log("Ya te puedes unir a la partida")
+    socket.emit('desabilitar', {status: false});
   }
   let i = 10;
 
@@ -82,8 +86,9 @@ io.on('connection', (socket) => {
     bastaIsclicked = false;
     console.log(`messageReceivedFromClient letra ${data}`);
     letraGlobal = data
+    io.sockets.emit('letra', {letra: data})
     // Emite un mensaje
-    socket.emit('toast', { message: `Letra ${data}`});
+    io.sockets.emit('toast', { message: `Letra ${data}`});
     socket.broadcast.emit('toast', { message: `Letra ${data}`});
   });
   
@@ -111,14 +116,17 @@ io.on('connection', (socket) => {
         } else {
           socket.broadcast.emit('toast', { message: 'Se acabó el tiempo'});
           socket.emit('toast', { message: 'Se acabó el tiempo'});
+          gameIsOn = false
           clearInterval(storeTimeInterval);
           // socket.broadcast.emit('toast', { message: `El ganador es ${ganador} con ${puntos} puntos`});
           // socket.emit('toast', { message: `El ganador es ${ganador} con ${puntos} puntos`});
         }
         i--;
+
       }, 1000);
     }
     winner(answers,letraGlobal);
+    
   });
 
   

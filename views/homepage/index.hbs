@@ -1,5 +1,8 @@
 <main role="main" class="container">
-  <button class="btn btn-primary" onclick="emitRandomLetter();">
+  <h1><span id="usuarioNuevo"></span></h1>
+  <h1>Bienvenido: <span id="usuario"></span></h1>
+  <br>
+  <button class="btn btn-primary" id="Onoff" onclick="emitRandomLetter();">
     Inicar partida!
   </button>
   <br></br>
@@ -18,7 +21,7 @@
       <input type="text" class="form-control" id="frutoInput" placeholder="Fruto">
     </div>
     {{!-- <button type="submit" class="btn btn-primary">Submit</button> --}}
-    <button class="btn btn-success" onclick="emitEventToSocketIo();">
+    <button class="btn btn-success" id="btB" onclick="emitEventToSocketIo();">
       Basta!
     </button>
   {{!-- </form> --}}
