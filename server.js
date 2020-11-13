@@ -32,6 +32,7 @@ var letraGlobal;
 var bastaIsclicked = false;
 var scores = [];
 var gameIsOn = false;
+var contadorCliente = 0;
 
 app.engine(extNameHbs, hbs.engine);
 app.set('view engine', extNameHbs);
@@ -69,7 +70,14 @@ io.on('connection', (socket) => {
   let c = Math.random().toString(36).substring(7);
   // Recibe la conexión del cliente
   console.log('Client connected...', c);
+  contadorCliente++;
   socket.emit('usuario', {usuario:c});
+
+  if(contadorCliente == 1){
+    io.sockets.emit('toast', { message: `Espera a que otro jugador se conecte`});
+  } else {
+    io.sockets.emit('toast', { message: `Ya puedes jugar`});
+  }
   
   if(gameIsOn == true){
     console.log("Hay un juego en curso")
@@ -117,14 +125,20 @@ io.on('connection', (socket) => {
           socket.broadcast.emit('toast', { message: 'Se acabó el tiempo'});
           socket.emit('toast', { message: 'Se acabó el tiempo'});
           gameIsOn = false
-          socket.emit('desabilitar', {status: false});
           clearInterval(storeTimeInterval);
           winner(answers,letraGlobal);
           socket.broadcast.emit('toast', { message: `El ganador es ${ganador} con ${puntos} puntos`});
           socket.emit('toast', { message: `El ganador es ${ganador} con ${puntos} puntos`});
+          socket.emit('desabilitar', {status: false});
+          var storeTimeInterval2 = setInterval(() => {
+            socket.broadcast.emit('toast', { message: `Cualquier cliente puede unirse ahora, si eres nuevo cliente da refresh`});
+            socket.emit('toast', { message: `Cualquier cliente puede unirse ahora, si eres nuevo cliente da refresh`});
+            clearInterval(storeTimeInterval2);
+          }, 7000);
         }
         i--;
       }, 1000);
+
     }
     
   });

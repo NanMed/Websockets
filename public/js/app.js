@@ -45,6 +45,12 @@ function checkGame(){
       const usuarioNuevo = document.getElementById("usuarioNuevo");
       usuarioNuevo.innerHTML = "Juego en progreso, espera un momento";
       document.getElementById("btB").disabled = true;
+    } else {
+      console.log("Estoy en false")
+      document.getElementById("Onoff").disabled = false;
+      const usuarioNuevo = document.getElementById("usuarioNuevo");
+      usuarioNuevo.innerHTML = "Diviértete jugando basta!";
+      document.getElementById("btB").disabled = false;
     }
         
   });
@@ -77,7 +83,6 @@ function emitEventToSocketIo() {
   // Envía un mensaje
   var data = { nombre: nombre, color: color, fruto: fruto, letra:this.letra};
   window.socket.emit('messageToServer', data);
-  
 }
 
 
